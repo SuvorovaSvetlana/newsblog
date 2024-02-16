@@ -1,0 +1,30 @@
+*{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+}
+/*#c2beb5; #e3e1dc;
+*/
+.nav{
+      text-align: center;
+      min-height: 100px;
+      width: 100%;
+      padding: 40px;
+      background-color: #e3e1dc;
+}
+.container{
+      width: 100%;
+      min-height: 700px;
+      display: flex;
+}
+.allUsers{
+     width: 50%; 
+     background-color: #e3e1dc;
+     border: 2px solid #c2beb5;
+}
+
+.allPosts{
+      width: 50%;
+      background-color:#e3e1dc;
+      border: 2px solid #c2beb5;
+}

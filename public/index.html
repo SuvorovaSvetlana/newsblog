@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>news blog</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">      
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+      <link rel="stylesheet" href="style.css">
+</head>
+<body>
+      <header>
+            <img src="./icon/user.png" id="userIcon">
+            <button type="button" class="getAccountBtn none" id="getAccountBtn">Личный кабинет</button>
+            <h1>NEWS BLOG</h1> 
+      </header> 
+      <div class="authorizationMenu none" id="authorizationMenu">
+            <button type="button" class="closeForm" id="closeFormBtn">Х</button>
+            <button type="button" class="authorizationMenuButton" id="entranceBtn" >Войти</button>
+            <button type="button" class="authorizationMenuButton" id="registrationBtn">Зарегистрироватся</button>
+      </div>
+      <div class="modalWindowRegistration none" id="modalWindowRegistration">
+            <button type="button" class="closeFormModal" id="closeFormRegistr">Х</button>
+            <div class="formBlock">
+                  <form>
+                        <h2 class="formHeader">Регистрация</h2>
+                        <label class="formLabel">Ваш email</label>
+                        <input type="email" placeholder="Введите ваш email" id="emailRegistr">
+                        <label class="formLabel">Ваш пароль</label>
+                        <input type="password" placeholder="Введите пароль" id="passwordRegistr">
+                        <button type="button" class="formButton" id="registration">Регистрация</button>
+                  </form>
+            </div>  
+      </div>
+      <div class="modalWindowAuthorization none" id="modalWindowAuthorization">
+            <button type="button" class="closeFormModal" id="closeFormAutoriz">Х</button>
+            <div class="formBlock"> 
+                  <form>
+                        <h2 class="formHeader">Авторизация</h2>
+                        <label  class="formLabel">Ваш email</label>
+                        <input type="email" placeholder="Введите ваш email" id="emailAuthoriz">
+                        <label  class="formLabel">Ваш пароль</label>
+                        <input type="password" placeholder="Введите пароль" id="passwordAuthoriz">
+                        <button type="button" class="formButton" id="entranceAuthorizBtn">Вход</button>
+                        <button type="button" class="formButton" id="forgotPasswordBtn">Забыли пароль?</button>
+                  </form>
+            </div>  
+      </div>
+      <div class="container">
+            <div class="allNews">
+                  <div class="news">
+                        <div class="card mb-3">
+                              <div class="row g-0">
+                                <div class="col-md-4">
+                                  <img src="./images/news.jpg" class="img-fluid rounded-start" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                  <div class="card-body">
+                                    <h5 class="card-title">Card title</h5>
+                                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+                  </div>
+                  <div class="news"></div>
+                  <div class="news"></div>
+                  <div class="news"></div>
+            </div>
+      </div>
+      <footer></footer>         
+      <script type="module" src="script.js"></script>
+</body>
+</html>
