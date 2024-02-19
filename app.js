@@ -6,6 +6,8 @@ const router = express.Router();
 const path = require('path');
 
 app.use(express.static('public'));
+app.use(express.static('./userpage'));
+//app.use('/static', express.static('public'));
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -31,7 +33,9 @@ const logIn = [
       }
 ];
 
-app.get('/userPage')
+app.get('userPage', (req, res) =>{
+ console.log('userPage')
+})
 
 app.get('/logIn', (req, res) => {
       res.send(logIn)
