@@ -65,7 +65,7 @@ let posts = [
 
 
 app.get('userPage', (req, res) =>{
- console.log('userPage')
+ console.log('userPage') 
 })
 
 app.get('/posts', (req, res) =>{
@@ -92,14 +92,14 @@ app.post('/posts', (req, res)=>{
       console.log(posts)
 })
 
-app.delete('/post/:id', (req, res)=>{
+app.delete('/posts/:id', (req, res)=>{
       const id = req.params.id;
       posts = posts.filter((post) => post.postId != +id)
       res.send({success: true})
 })
 
 app.delete('/posts', (req, res)=>{
-      todos = []
+      posts = []
       res.json(req.body)
       console.log('all deleted')
 })
