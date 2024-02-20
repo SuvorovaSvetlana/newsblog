@@ -1,14 +1,21 @@
+import {renderPosts} from "./renderPosts.js"
 
 fetch('http://localhost:3000/logIn')
 .then(res => res.json())
 .then((res) =>logIn = res)
 let logIn = [];
 
+fetch('http://localhost:3000/posts')
+.then(res => res.json())
+.then((res) => {renderPosts(res)})
+
+
+
 const getAccountBtn = document.getElementById('getAccountBtn');
 
 function getAccount (e){
       console.log(e.target)
-      fetch('http://localhost:3000/userPage')
+      fetch('http://localhost:3000/userpage/userpage.html')
 }
 
 const userIcon = document.getElementById('userIcon');
@@ -106,4 +113,6 @@ userIcon.addEventListener('click', ()=>{
             authorizationMenu.addEventListener('click', userLog, {once: true});  
       
       })
+
+
   
