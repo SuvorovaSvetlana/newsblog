@@ -9,8 +9,20 @@
 		{
 			"name": "Log in",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"login\": \"test\",\r\n    \"password\": \"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": "{{endpoint}}/logIn"
 			},
 			"response": []
@@ -43,7 +55,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n    {\r\n    \"postTitle\": \"New post 1\",\r\n    \"postText\": \"This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.\",\r\n    \"postInfo\": \"Last updated 3 mins ago\",\r\n    \"postImg\": \"./images/news.jpg\"\r\n},\r\n{\r\n    \"postTitle\": \"New post 2\",\r\n    \"postText\": \"This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.\",\r\n    \"postInfo\": \"Last updated 3 mins ago\",\r\n    \"postImg\": \"./images/news.jpg\"\r\n},\r\n{\r\n    \"postTitle\": \"New post 3\",\r\n    \"postText\": \"This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.\",\r\n    \"postInfo\": \"Last updated 3 mins ago\",\r\n    \"postImg\": \"./images/news.jpg\"\r\n},\r\n{\r\n    \"postTitle\": \"New post 4\",\r\n    \"postText\": \"This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.\",\r\n    \"postInfo\": \"Last updated 3 mins ago\",\r\n    \"postImg\": \"./images/news.jpg\"\r\n}\r\n]  ",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -84,13 +96,19 @@
 			"name": "change one post",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"post\": \"New post.\"\r\n}",
+					"raw": "{\r\n    \"postText\": \"New text1.\"\r\n}",
 					"options": {
 						"raw": {
-							"language": "text"
+							"language": "json"
 						}
 					}
 				},
@@ -108,7 +126,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "2"
+							"value": "1"
 						}
 					]
 				}
@@ -173,7 +191,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "3"
 						}
 					]
 				}
