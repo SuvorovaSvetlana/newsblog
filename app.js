@@ -81,7 +81,13 @@ app.get('/posts/:id', (req, res) =>{
 app.get('/logIn', (req, res) => {
       res.send(logIn)
 })
-
+app.put('/posts/:id', (req, res)=>{
+      const id = req.params.id;
+      const newPost = posts.find((post) => post.postId === +id)
+      newPost.postText = req.body.postText;
+      res.json(req.body)
+      console.log(newPost)
+})
 app.post('/logIn', (req, res)=>{ 
       logIn.push(req.body)
       res.json(req.body)
@@ -89,7 +95,6 @@ app.post('/logIn', (req, res)=>{
 app.post('/posts', (req, res)=>{
       posts.push(req.body)
       res.json(req.body)
-      console.log(posts)
 })
 
 app.delete('/posts/:id', (req, res)=>{
