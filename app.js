@@ -32,7 +32,7 @@ const logIn = [
       }
 ];
 
-const posts = [
+let posts = [
       {
             postTitle: "New post 1",
             postText: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
@@ -79,46 +79,26 @@ app.get('/posts/:id', (req, res) =>{
       console.log(foundPost)
 })
      
-
 app.get('/logIn', (req, res) => {
       res.send(logIn)
 })
 
-
 app.post('/logIn', (req, res)=>{ 
       logIn.push(req.body)
       res.json(req.body)
-      console.log(logIn)
 })
+
+app.delete('/post/:id', (req, res)=>{
+      const id = req.params.id;
+      posts = posts.filter((post) => post.postId != +id)
+      res.send({success: true})
+})
+
+app.delete('/posts', (req, res)=>{
+      todos = []
+      res.json(req.body)
+})
+
 app.listen(port, ()=>{
       console.log(`App listening on port ${port}`)
 }) 
-
-/*
-const posts = [
-      {
-            postTitle: "New post 1",
-            postText: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-            postInfo: "Last updated 3 mins ago",
-            postImg: "./images/news.jpg"
-      },
-      {
-            postTitle: "New post 2",
-            postText: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-            postInfo: "Last updated 3 mins ago",
-            postImg: "./images/news.jpg"
-      },
-      {
-            postTitle: "New post 3",
-            postText: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-            postInfo: "Last updated 3 mins ago",
-            postImg: "./images/news.jpg"
-      },
-      {
-            postTitle: "New post 4",
-            postText: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-            postInfo: "Last updated 3 mins ago",
-            postImg: "./images/news.jpg"
-      },
-]
-*/ 
