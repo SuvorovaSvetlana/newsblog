@@ -76,7 +76,6 @@ app.get('/posts/:id', (req, res) =>{
       const id = req.params.id;
       const foundPost = posts.find((post) => post.postId === +id);
       res.send(foundPost);
-      console.log(foundPost)
 })
      
 app.get('/logIn', (req, res) => {
@@ -86,6 +85,11 @@ app.get('/logIn', (req, res) => {
 app.post('/logIn', (req, res)=>{ 
       logIn.push(req.body)
       res.json(req.body)
+})
+app.post('/posts', (req, res)=>{
+      posts.push(req.body)
+      res.json(req.body)
+      console.log(posts)
 })
 
 app.delete('/post/:id', (req, res)=>{
@@ -97,6 +101,7 @@ app.delete('/post/:id', (req, res)=>{
 app.delete('/posts', (req, res)=>{
       todos = []
       res.json(req.body)
+      console.log('all deleted')
 })
 
 app.listen(port, ()=>{
