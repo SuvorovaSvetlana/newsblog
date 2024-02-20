@@ -16,6 +16,24 @@
 			"response": []
 		},
 		{
+			"name": "add new post",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "      {\r\n            \"postTitle\": \"New post 1\",\r\n            \"postText\": \"New text.\",\r\n            \"postInfo\": \"Last updated 3 mins ago\",\r\n            \"postImg\": \"./images/news.jpg\",\r\n            \"postId\": 6\r\n      }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/posts"
+			},
+			"response": []
+		},
+		{
 			"name": "All posts",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -33,6 +51,67 @@
 					}
 				},
 				"url": "{{endpoint}}/posts"
+			},
+			"response": []
+		},
+		{
+			"name": "one post",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/posts/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change one post",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"post\": \"New post.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/posts/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"posts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
 			},
 			"response": []
 		},
@@ -95,41 +174,6 @@
 						{
 							"key": "id",
 							"value": "1"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "change one post",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"post\": \"New post.\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "text"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/posts/:id",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"posts",
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "2"
 						}
 					]
 				}
