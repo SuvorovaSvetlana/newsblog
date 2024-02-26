@@ -5,6 +5,15 @@ const port = 3000;
 const router = express.Router();
 const path = require('path');
 
+const Pool = require('pg').Pool;
+const pool = new Pool ({
+      user: 'postgres',
+      password: '123',
+      host: 'localhost',
+      port: 3036,
+      database: 'newsblog'
+});
+
 app.use(express.static('public'));
 app.use(express.static('./userpage'));
 app.use(express.json());
