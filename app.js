@@ -21,9 +21,13 @@ app.get('/posts/:id', db.getOnePost)
      
 app.get('/logIn', db.getAllUser);
 
+app.get('/logIn/:id', db.userIdentify);
+
 app.put('/posts/:id', db.changeOnePost)
 
 app.post('/logIn', db.newUserLogin);
+
+app.post('/logIn/:user_login', db.userAutoriz);
 
 app.post('/posts', db.newPost);
 
