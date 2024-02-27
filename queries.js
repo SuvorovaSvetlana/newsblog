@@ -49,16 +49,44 @@ const getAllposts = async (req, res) =>{
 
 const changeOnePost = async (req, res) =>{
       const id = parseInt(req.params.id);
+      console.log(id)
       const {postTitle, postText, postInfo, postImg} = req.body;
       try{
-            const result = await pool.query('UPDATE posts SET post_title = $1, post_text = $2, post_info= $3, post_img = $4 WHERE id = $5', [postTitle, postText, postInfo, postImg, id])
+            const result = await pool.query('UPDATE posts SET post_title = $1, post_text = $2, post_info = $3, post_img = $4 WHERE id = $5', [postTitle, postText, postInfo, postImg, id])
             res.status(200).send(result.rows[0])
-            console.log(result.rows[0])
       }catch(error){
             console.error(error)
       }
 }
 
+const deleteOnePost = async (req, res) =>{
+      const id = req.params.id;
+      try{
+            await pool.query ('DELETE FROM posts WHERE ID = $1', [id])
+            res.send({success: true})
+      } catch (error){
+            console.error(error)
+      }
+}
+
+const deleteAllPosts = async (req, res) =>{
+      try{
+            await pool.query ('DELETE FROM posts')
+            res.send({success: true})
+      }catch(error){
+            console.error(error)
+      }
+}
+
+const deleteOneUser = async (req, res) =>{
+      const id = req.params.id;
+      try{
+            await pool.query ('DELETE FROM users WHERE id = $1', [id]);
+            res.send({success: true})
+      }catch(error){
+            console.error(error)
+      }
+}
 
 module.exports = {
       newUserLogin,
@@ -67,4 +95,7 @@ module.exports = {
       getAllposts,
       getOnePost,
       changeOnePost,
+      deleteOnePost,
+      deleteAllPosts,
+      deleteOneUser,
 }
