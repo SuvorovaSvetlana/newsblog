@@ -1,10 +1,11 @@
 const express =require ('express');
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');   
 const port = 3000;
 const router = express.Router();
 const path = require('path');
 const db = require('./queries');
+
 
 app.use(express.static('public'));
 app.use(express.static('./userpage'));
@@ -27,7 +28,7 @@ app.put('/posts/:id', db.changeOnePost)
 
 app.post('/logIn', db.newUserLogin);
 
-app.post('/logIn/:user_login', db.userAutoriz);
+app.post('/logIn/autoriz', db.userAutoriz);
 
 app.post('/posts', db.newPost);
 

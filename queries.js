@@ -7,6 +7,19 @@ const pool = new Pool ({
       database: 'newsblog'
 });
 
+
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+function hashPassword(password){
+      const secret = "Hallo newsblog";
+      const hash = crypto.createHmac('sha256', secret)
+      .update(password)
+      .digest('hex');
+      return hash;
+}
+
+
 pool.connect();
 
 const newUserLogin = async (req, res) => {
@@ -40,13 +53,14 @@ const userAutoriz = async (req, res) =>{
       try{
             const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
             if(result.rows[0].user_password === user_password){
+                  const token = jwt.sign({user_login}, 'secret', {expiresIn: '8h'})
                   if(result.rows[0].isadmin === true){
-                        res.send("autoriz as admin")
+                        res.json({token})
                   }else {
-                        res.send('autoriz as user')
+                        res.json({token})
                   }
             }else{
-                  res.send('no autoriz')
+                  res.status(401).json({error: 'Неправильные учетные данные'})
             }
       }catch(error){
             console.error(error)
