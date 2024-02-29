@@ -11,6 +11,7 @@ const pool = new Pool ({
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
+
 function hashPassword(password){
       const secret = "Hallo newsblog";
       const hash = crypto.createHmac('sha256', secret)
@@ -23,9 +24,12 @@ function hashPassword(password){
 pool.connect();
 
 const newUserLogin = async (req, res) => {
-      const {login, password, isadmin} = req.body;
+      
       try{
-            const result = await pool.query('INSERT INTO users (user_login, user_password, isadmin) VALUES ($1, $2, $3) RETURNING *', [login, password, isadmin])
+            const {login, password, isadmin} = req.body;
+            const newPassword =  hashPassword(password);
+            const result = await pool.query('INSERT INTO users (user_login, user_password, isadmin) VALUES ($1, $2, $3) RETURNING *', [login, newPassword, isadmin])
+            console.log(newPassword);
             res.status(201).send(result.rows[0])
       } catch (error){
             console.error(error)
@@ -52,12 +56,13 @@ const userAutoriz = async (req, res) =>{
       const {user_login, user_password} = req.body;
       try{
             const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
-            if(result.rows[0].user_password === user_password){
+            const hash = hashPassword(user_password)
+            if(result.rows[0].user_password === hash){
                   const token = jwt.sign({user_login}, 'secret', {expiresIn: '8h'})
                   if(result.rows[0].isadmin === true){
-                        res.json({token})
+                        res.json({token, "role": "admin"})
                   }else {
-                        res.json({token})
+                        res.json({token, "role": "user"})
                   }
             }else{
                   res.status(401).json({error: 'Неправильные учетные данные'})
