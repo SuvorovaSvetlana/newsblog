@@ -7,10 +7,10 @@ const pool = new Pool ({
       database: 'newsblog'
 });
 
+pool.connect();
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-
 
 function hashPassword(password){
       const secret = "Hallo newsblog";
@@ -20,16 +20,11 @@ function hashPassword(password){
       return hash;
 }
 
-
-pool.connect();
-
 const newUserLogin = async (req, res) => {
-      
       try{
             const {login, password, isadmin} = req.body;
             const newPassword =  hashPassword(password);
             const result = await pool.query('INSERT INTO users (user_login, user_password, isadmin) VALUES ($1, $2, $3) RETURNING *', [login, newPassword, isadmin])
-            console.log(newPassword);
             res.status(201).send(result.rows[0])
       } catch (error){
             console.error(error)
@@ -37,11 +32,28 @@ const newUserLogin = async (req, res) => {
 }
 
 const getAllUser = async (req, res)=>{
-      const result = await pool.query('SELECT * FROM users')
-      res.json(result.rows)
+      const userObj = req.user;
+      if(userObj.isAdmin){
+            try{
+                  const result = await pool.query('SELECT * FROM users')
+                  res.json(result.rows)
+            }catch(error){
+                  console.error(error)
+            }
+
+      }else{
+            try{
+                  const result = await pool.query('SELECT * FROM users WHERE is_deleted = false')
+                  res.json(result.rows)
+            }catch(error){
+                  console.error(error)
+            }
+
+      }
+
 }
 
-const userIdentify = async (req, res) =>{
+/*const userIdentify = async (req, res) =>{
       const id = parseInt(req.params.id);
       try{
             const result = await pool.query('SELECT * FROM users WHERE id = $1', [id])
@@ -50,7 +62,7 @@ const userIdentify = async (req, res) =>{
       }catch(error){
             console.log('error', error)
       }
-}
+}*/
 
 const userAutoriz = async (req, res) =>{
       const {user_login, user_password} = req.body;
@@ -58,7 +70,7 @@ const userAutoriz = async (req, res) =>{
             const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
             const hash = hashPassword(user_password)
             if(result.rows[0].user_password === hash){
-                  const token = jwt.sign({user_login}, 'secret', {expiresIn: '8h'})
+                  const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin}, 'secret', {expiresIn: '8h'})
                   if(result.rows[0].isadmin === true){
                         res.json({token, "role": "admin"})
                   }else {
@@ -91,6 +103,7 @@ const getOnePost = async (req, res) =>{
             console.error(error)
       }
 }
+
 const getAllposts = async (req, res) =>{
       const result = await pool.query('SELECT * FROM posts')
       res.send(result.rows)
@@ -99,41 +112,88 @@ const getAllposts = async (req, res) =>{
 const changeOnePost = async (req, res) =>{
       const id = parseInt(req.params.id);
       const {postTitle, postText, postInfo, postImg} = req.body;
-      try{
-            const result = await pool.query('UPDATE posts SET post_title = $1, post_text = $2, post_info = $3, post_img = $4 WHERE id = $5 RETURNING *', [postTitle, postText, postInfo, postImg, id])
-            res.json(result.rows[0])
-      }catch(error){
-            console.error(error)
+      const userObj = req.user;
+      if(userObj.isAdmin){
+            try{
+                  const result = await pool.query('UPDATE posts SET post_title = $1, post_text = $2, post_info = $3, post_img = $4 WHERE id = $5 RETURNING *', [postTitle, postText, postInfo, postImg, id])
+                  res.json(result.rows[0])
+            }catch(error){
+                  console.error(error)
+            }
+      }else{
+            try{ 
+                  const postUserId = await pool.query('SELECT user_id FROM posts WHERE id = $1', [id])
+                  if(postUserId.rows[0].user_id === userObj.userId){
+                        try{
+                              const result = await pool.query('UPDATE posts SET post_title = $1, post_text = $2, post_info = $3, post_img = $4 WHERE id = $5 RETURNING *', [postTitle, postText, postInfo, postImg, id])
+                              res.json(result.rows[0])
+                        }catch(error){
+                              console.error(error)
+                        }
+                  }else {
+                        res.send("You can not change this post")
+                  }
+            }catch(error){
+                  console.error(error)
+            }
       }
+
 }
 
 const deleteOnePost = async (req, res) =>{
       const id = parseInt(req.params.id);
-      try{
-            await pool.query ('DELETE FROM posts WHERE ID = $1', [id])
-            res.send({success: true})
-      } catch (error){
-            console.error(error)
-      }
+      const userObj = req.user;
+      if(userObj.isAdmin){ 
+            try{
+                  await pool.query ('DELETE FROM posts WHERE ID = $1', [id])
+                  res.send({success: true})
+            } catch (error){
+                  console.error(error)
+            }
+         }else{
+            try{
+                  const result = await pool.query ('DELETE FROM posts WHERE ID = $1 AND user_id = $2', [id, userObj.userId])
+                  if (result > 0){
+                        res.send({success: true})
+                  }else {
+                        res.send("You can not delete this post")
+                  }
+            } catch (error){
+                  console.error(error)
+            } 
+         }
+
 }
 
 const deleteAllPosts = async (req, res) =>{
-      try{
-            await pool.query ('DELETE FROM posts')
-            res.send({success: true})
-      }catch(error){
-            console.error(error)
+      const userObj = req.user;
+      if(userObj.isAdmin){
+            try{
+                  await pool.query ('DELETE FROM posts')
+                  res.send({success: true})
+            }catch(error){
+                  console.error(error)
+            }
+      }else{
+            res.send('You do not have permission to delete all posts')
       }
+
 }
 
 const deleteOneUser = async (req, res) =>{
       const id = parseInt(req.params.id);
-      try{
-            await pool.query ('DELETE FROM users WHERE id = $1', [id]);
-            res.send({success: true})
-      }catch(error){
-            console.error(error)
+      const userObj = req.user;
+      if(userObj.isAdmin || id === userObj.userId){
+            try{
+                  await pool.query ('UPDATE users SET is_deleted = TRUE WHERE id = $1', [id]); // AND user_id = $2, userObj.userId
+                  res.send({success: true})
+            }catch(error){
+                  console.error(error)
+            }
+      }else{
+           res.send('You don`t have permission to delete this user')
       }
+
 }
 
 module.exports = {
@@ -146,6 +206,6 @@ module.exports = {
       deleteOnePost,
       deleteAllPosts,
       deleteOneUser,
-      userIdentify,
       userAutoriz,
+       // userIdentify,
 }
