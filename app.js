@@ -40,7 +40,7 @@ app.post('/logIn', db.newUserLogin);
 
 app.post('/logIn/autoriz', db.userAutoriz);
 
-app.post('/posts', db.newPost);
+app.post('/posts', getUserFromToken, db.newPost);
 
 app.delete('/posts/:id', getUserFromToken, db.deleteOnePost);
 

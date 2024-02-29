@@ -11,6 +11,7 @@ pool.connect();
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { send } = require('process');
 
 function hashPassword(password){
       const secret = "Hallo newsblog";
@@ -70,7 +71,7 @@ const userAutoriz = async (req, res) =>{
             const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
             const hash = hashPassword(user_password)
             if(result.rows[0].user_password === hash){
-                  const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin}, 'secret', {expiresIn: '8h'})
+                  const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin, isDeleted: result.rows[0].is_deleted}, 'secret', {expiresIn: '8h'})
                   if(result.rows[0].isadmin === true){
                         res.json({token, "role": "admin"})
                   }else {
@@ -87,12 +88,18 @@ const userAutoriz = async (req, res) =>{
 
 const newPost = async (req, res) => {
       const { postTitle, postText, postInfo, postImg, userId } = req.body;
-      try{
-            const result = await pool.query('INSERT INTO  posts (post_title, post_text, post_info, post_img, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', [postTitle, postText, postInfo, postImg, userId])
-            res.status(201).json(result.rows[0])
-      }catch (error){
-            console.error(error)
+      const userObj = req.user;
+      if(!userObj.isDeleted){
+            try{
+                  const result = await pool.query('INSERT INTO  posts (post_title, post_text, post_info, post_img, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', [postTitle, postText, postInfo, postImg, userId])
+                  res.status(201).json(result.rows[0])
+            }catch (error){
+                  console.error(error)
+            }
+      }else{
+            res.send('You do not have permission to add new post')
       }
+
 }
 const getOnePost = async (req, res) =>{
       const id = parseInt(req.params.id);
