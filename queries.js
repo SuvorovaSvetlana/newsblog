@@ -56,9 +56,33 @@ const getAllUser = async (req, res)=>{
 
 const userAuthorization = async (req, res) =>{
       const {user_login, user_password} = req.body;
-      const isDeleted = await pool.query('SELECT is_deleted from users WHERE user_login = $1', [user_login])
-      console.log(isDeleted.rows[0].is_deleted)
-      if(isDeleted.rows[0].is_deleted){
+      try{
+            const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
+            if(result.rows[0]){
+                  if(result.rows[0].is_deleted){
+                        res.send('Вы не зарегистрированы')
+                  }else{
+                         const hash = hashPassword(user_password)
+                        if(result.rows[0].user_password === hash){
+                              const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin, isDeleted: result.rows[0].is_deleted}, 'secret', {expiresIn: '8h'})
+                              if(result.rows[0].isadmin === true){
+                                    res.json({token, "role": "admin"})
+                              }else {
+                                    res.json({token, "role": "user"})
+                              }
+                        }else{
+                              res.status(401).send('Забыли пароль?')
+                        }
+                  }
+            }else{
+                  res.send('Вы не зарегистрированы')
+            }
+      }catch(error){
+            console.error(error)
+      }
+        
+     /* const isDeleted = await pool.query('SELECT is_deleted from users WHERE user_login = $1', [user_login])
+      if( isDeleted.rows[0].is_deleted){
             res.send('Вы не зарегистрированы')
       }else{
             try{
@@ -72,12 +96,13 @@ const userAuthorization = async (req, res) =>{
                               res.json({token, "role": "user"})
                         }
                   }else{
+
                         res.status(401).json({error: 'Неправильные учетные данные'})
                   }
             }catch(error){
                   console.error(error)
             }
-      }
+      }*/
 }
   
 const newPost = async (req, res) => {
