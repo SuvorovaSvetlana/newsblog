@@ -54,38 +54,32 @@ const getAllUser = async (req, res)=>{
 
 }
 
-/*const userIdentify = async (req, res) =>{
-      const id = parseInt(req.params.id);
-      try{
-            const result = await pool.query('SELECT * FROM users WHERE id = $1', [id])
-            res.send(result.rows[0])
-            console.log(result.rows[0].id)
-      }catch(error){
-            console.log('error', error)
-      }
-}*/
-
-const userAutoriz = async (req, res) =>{
+const userAuthorization = async (req, res) =>{
       const {user_login, user_password} = req.body;
-      try{
-            const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
-            const hash = hashPassword(user_password)
-            if(result.rows[0].user_password === hash){
-                  const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin, isDeleted: result.rows[0].is_deleted}, 'secret', {expiresIn: '8h'})
-                  if(result.rows[0].isadmin === true){
-                        res.json({token, "role": "admin"})
-                  }else {
-                        res.json({token, "role": "user"})
+      const isDeleted = await pool.query('SELECT is_deleted from users WHERE user_login = $1', [user_login])
+      console.log(isDeleted.rows[0].is_deleted)
+      if(isDeleted.rows[0].is_deleted){
+            res.send('Вы не зарегистрированы')
+      }else{
+            try{
+                  const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
+                  const hash = hashPassword(user_password)
+                  if(result.rows[0].user_password === hash){
+                        const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin, isDeleted: result.rows[0].is_deleted}, 'secret', {expiresIn: '8h'})
+                        if(result.rows[0].isadmin === true){
+                              res.json({token, "role": "admin"})
+                        }else {
+                              res.json({token, "role": "user"})
+                        }
+                  }else{
+                        res.status(401).json({error: 'Неправильные учетные данные'})
                   }
-            }else{
-                  res.status(401).json({error: 'Неправильные учетные данные'})
+            }catch(error){
+                  console.error(error)
             }
-      }catch(error){
-            console.error(error)
       }
-
 }
-
+  
 const newPost = async (req, res) => {
       const { postTitle, postText, postInfo, postImg, userId } = req.body;
       const userObj = req.user;
@@ -192,7 +186,7 @@ const deleteOneUser = async (req, res) =>{
       const userObj = req.user;
       if(userObj.isAdmin || id === userObj.userId){
             try{
-                  await pool.query ('UPDATE users SET is_deleted = TRUE WHERE id = $1', [id]); // AND user_id = $2, userObj.userId
+                  await pool.query ('UPDATE users SET is_deleted = TRUE WHERE id = $1', [id]);
                   res.send({success: true})
             }catch(error){
                   console.error(error)
@@ -205,6 +199,7 @@ const deleteOneUser = async (req, res) =>{
 
 module.exports = {
       newUserLogin,
+      userAuthorization,
       getAllUser,
       newPost,
       getAllposts,
@@ -213,6 +208,4 @@ module.exports = {
       deleteOnePost,
       deleteAllPosts,
       deleteOneUser,
-      userAutoriz,
-       // userIdentify,
 }

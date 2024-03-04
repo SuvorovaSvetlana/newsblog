@@ -32,13 +32,11 @@ app.get('/posts/:id', getUserFromToken, db.getOnePost)
      
 app.get('/logIn', getUserFromToken, db.getAllUser);
 
-//app.get('/logIn/:id', db.userIdentify);
-
 app.put('/posts/:id', getUserFromToken, db.changeOnePost)
 
 app.post('/logIn', db.newUserLogin);
 
-app.post('/logIn/autoriz', db.userAutoriz);
+app.post('/logIn/autoriz', db.userAuthorization);
 
 app.post('/posts', getUserFromToken, db.newPost);
 
