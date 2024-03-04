@@ -53,7 +53,6 @@ const getAllUser = async (req, res)=>{
       }
 
 }
-
 const userAuthorization = async (req, res) =>{
       const {user_login, user_password} = req.body;
       try{
@@ -80,31 +79,33 @@ const userAuthorization = async (req, res) =>{
       }catch(error){
             console.error(error)
       }
-        
-     /* const isDeleted = await pool.query('SELECT is_deleted from users WHERE user_login = $1', [user_login])
-      if( isDeleted.rows[0].is_deleted){
-            res.send('Вы не зарегистрированы')
-      }else{
-            try{
-                  const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [user_login])
-                  const hash = hashPassword(user_password)
-                  if(result.rows[0].user_password === hash){
-                        const token = jwt.sign({user_login, userId: result.rows[0].id, isAdmin: result.rows[0].isadmin, isDeleted: result.rows[0].is_deleted}, 'secret', {expiresIn: '8h'})
-                        if(result.rows[0].isadmin === true){
-                              res.json({token, "role": "admin"})
-                        }else {
-                              res.json({token, "role": "user"})
-                        }
-                  }else{
-
-                        res.status(401).json({error: 'Неправильные учетные данные'})
-                  }
-            }catch(error){
-                  console.error(error)
-            }
-      }*/
 }
-  
+
+const logOut = (req, res)=>{
+      const headers = req.headers;
+      headers.authorization = " ";
+      res.send("log Out");
+}
+
+const forgotPassword = async(req, res, next)=>{
+      const userLogin = req.body.user_login;
+      try{
+            const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [userLogin])  
+            const userPassword = result.rows[0].user_password;
+            const getPassword = await pool.query ('SELECT * FROM forgotPassword FETCH FIRST ROW ONLY');
+            const temporaryPassword = getPassword.rows[0].temporary_password;
+            console.log(userPassword, temporaryPassword)
+            res.send('forgot');
+      }catch(error){
+            console.error(error)
+      }
+      next();
+}
+
+const newPassword = async(req,res) =>{
+
+}
+
 const newPost = async (req, res) => {
       const { postTitle, postText, postInfo, postImg, userId } = req.body;
       const userObj = req.user;
@@ -233,4 +234,7 @@ module.exports = {
       deleteOnePost,
       deleteAllPosts,
       deleteOneUser,
+      logOut,
+      forgotPassword,
+      newPassword,
 }

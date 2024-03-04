@@ -36,9 +36,13 @@ app.put('/posts/:id', getUserFromToken, db.changeOnePost)
 
 app.post('/logIn', db.newUserLogin);
 
+app.post('/logOut',getUserFromToken, db.logOut);
+
 app.post('/logIn/authorization', db.userAuthorization);
 
 app.post('/posts', getUserFromToken, db.newPost);
+
+app.post('/forgotPassword', db.forgotPassword, db.newPassword);
 
 app.delete('/posts/:id', getUserFromToken, db.deleteOnePost);
 
