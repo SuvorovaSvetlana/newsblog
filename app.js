@@ -42,7 +42,9 @@ app.post('/logIn/authorization', db.userAuthorization);
 
 app.post('/posts', getUserFromToken, db.newPost);
 
-app.post('/forgotPassword', db.forgotPassword, db.newPassword);
+app.post('/forgotPassword', db.forgotPassword, db.temporaryPassword);
+
+app.post('/forgotPassword/newPassword', db.newPassword)
 
 app.delete('/posts/:id', getUserFromToken, db.deleteOnePost);
 
