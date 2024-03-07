@@ -43,7 +43,7 @@ app.post('/posts', getUserFromToken, db.newPost);
 
 app.post('/forgotPassword', db.forgotPassword);
 
-app.post('/recoverPassword/:temporaryPasswordToken', getUserFromToken, db.newPassword)
+app.post('/recoverPassword/:temporaryPasswordToken', db.newPassword)
 
 app.delete('/posts/:id', getUserFromToken, db.deleteOnePost);
 

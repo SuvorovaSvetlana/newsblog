@@ -103,10 +103,13 @@ const forgotPassword = async(req, res)=>{
 }
 
 const newPassword = async (req, res)=>{
-      const userLogin = req.user.userLogin;
-      const userId = req.user.userId;
+      const recoverPasswordToken = req.params.temporaryPasswordToken;
+      const userObj = jwt.verify(recoverPasswordToken, 'secret');
+      const userLogin = userObj.userLogin;
+      const userId = userObj.userId;
       const newPassword = req.body.newPassword;
       const hash = hashPassword(newPassword);
+      console.log(userLogin, userId)
       try{
             await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin]);
             await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
