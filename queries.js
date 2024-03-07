@@ -20,6 +20,7 @@ function hashPassword(password){
       .digest('hex');
       return hash;
 }
+//let temporaryPasswordToken = null;
 
 const newUserLogin = async (req, res) => {
       try{
@@ -41,7 +42,6 @@ const getAllUser = async (req, res)=>{
             }catch(error){
                   console.error(error)
             }
-
       }else{
             try{
                   const result = await pool.query('SELECT * FROM users WHERE is_deleted = false')
@@ -49,10 +49,9 @@ const getAllUser = async (req, res)=>{
             }catch(error){
                   console.error(error)
             }
-
       }
-
 }
+
 const userAuthorization = async (req, res) =>{
       const {user_login, user_password} = req.body;
       try{
@@ -87,61 +86,37 @@ const logOut = (req, res)=>{
       res.send("log Out");
 }
 
-const forgotPassword = async(req, res, next)=>{
+const forgotPassword = async(req, res)=>{
       const userLogin = req.body.user_login;
       try{
-           // const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [userLogin])  
-            const getPassword = await pool.query ('SELECT * FROM forgotPassword FETCH FIRST ROW ONLY');
-            const temporaryPassword1 = getPassword.rows[0].temporary_password;
-            const data = {
-                  userLogin,
-                  temporaryPassword1
-            }
-            req.data = data;
-            console.log(data);
-           //res.send('Временный пароль отправлен вам на почту')
+            const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [userLogin]);
+            userId = result.rows[0].id;
+            const temporaryPasswordToken =  jwt.sign({userLogin, userId}, 'secret', {expiresIn: '2h'})
+            await pool.query('INSERT INTO forgotPassword (user_id, temporary_password) VALUES($1, $2)', [userId, temporaryPasswordToken]) 
+            const URL = `http://localhost:3000/recoverPassword?token=${temporaryPasswordToken}`;
+            res.send('Перейдите по ссылке в письме')
+            console.log(URL);
+            console.log(temporaryPasswordToken)
       }catch(error){
             console.error(error)
       }
-      next();
-}
-
-const temporaryPassword = async (req, res, next)=>{
-      const {userLogin, temporaryPassword1} = req.data;
-      try{
-           // const result = await pool.query ('SELECT * FROM users WHERE user_login = $1', [userLogin])
-            const getTemporaryPassword = await pool.query ('SELECT * FROM forgotPassword FETCH FIRST ROW ONLY');
-            const temporaryPassword2 = getTemporaryPassword.rows[0].temporary_password;
-            if(temporaryPassword1 === temporaryPassword2){
-                  try{
-                        await pool.query ('DELETE FROM forgotPassword WHERE temporary_password = $1', [temporaryPassword1])
-                        req.userLogin = userLogin;
-                        res.send('/newPassword')
-                  }catch(error){
-                        console.error(error)
-                  }
-            }else{
-                  res.send('Введены неверные учетные данные')
-            }
-      }catch(error){
-            console.error(error)
-      }
-  
-      next()
 }
 
 const newPassword = async (req, res)=>{
-      const userLogin = 'admin@asd.asd'//req.userLogin.userLogin;
+      const userLogin = req.user.userLogin;
+      const userId = req.user.userId;
       const newPassword = req.body.newPassword;
-      const hash = hashPassword(newPassword)
+      const hash = hashPassword(newPassword);
       try{
-            await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin])
+            await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin]);
+            await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
       }catch(error){
             console.error(error)
       }
-      console.log(userLogin, newPassword)
+      console.log(userLogin, userId, hash)
       res.send('Новый пароль сохранен')
 }
+
 const newPost = async (req, res) => {
       const { postTitle, postText, postInfo, postImg, userId } = req.body;
       const userObj = req.user;
@@ -155,8 +130,8 @@ const newPost = async (req, res) => {
       }else{
             res.send('You do not have permission to add new post')
       }
-
 }
+
 const getOnePost = async (req, res) =>{
       const id = parseInt(req.params.id);
       try{
@@ -200,7 +175,6 @@ const changeOnePost = async (req, res) =>{
                   console.error(error)
             }
       }
-
 }
 
 const deleteOnePost = async (req, res) =>{
@@ -225,7 +199,6 @@ const deleteOnePost = async (req, res) =>{
                   console.error(error)
             } 
          }
-
 }
 
 const deleteAllPosts = async (req, res) =>{
@@ -240,7 +213,6 @@ const deleteAllPosts = async (req, res) =>{
       }else{
             res.send('You do not have permission to delete all posts')
       }
-
 }
 
 const deleteOneUser = async (req, res) =>{
@@ -256,7 +228,6 @@ const deleteOneUser = async (req, res) =>{
       }else{
            res.send('You don`t have permission to delete this user')
       }
-
 }
 
 module.exports = {
@@ -272,6 +243,5 @@ module.exports = {
       deleteOneUser,
       logOut,
       forgotPassword,
-      temporaryPassword,
       newPassword,
 }

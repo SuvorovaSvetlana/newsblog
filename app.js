@@ -25,7 +25,6 @@ const getUserFromToken = (req, res, next) => {
       req.user = userObj;
       next();
 }
-
 app.get('/posts', db.getAllposts);
 
 app.get('/posts/:id', getUserFromToken, db.getOnePost)
@@ -42,9 +41,9 @@ app.post('/logIn/authorization', db.userAuthorization);
 
 app.post('/posts', getUserFromToken, db.newPost);
 
-app.post('/forgotPassword', db.forgotPassword, db.temporaryPassword);
+app.post('/forgotPassword', db.forgotPassword);
 
-app.post('/forgotPassword/newPassword', db.newPassword)
+app.post('/recoverPassword/:temporaryPasswordToken', getUserFromToken, db.newPassword)
 
 app.delete('/posts/:id', getUserFromToken, db.deleteOnePost);
 
