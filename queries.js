@@ -109,14 +109,24 @@ const newPassword = async (req, res)=>{
       const userId = userObj.userId;
       const newPassword = req.body.newPassword;
       const hash = hashPassword(newPassword);
-      console.log(userLogin, userId)
       try{
-            await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin]);
-            await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
+            const result = await pool.query('SELECT * FROM forgotPassword WHERE temporary_password = $1', [recoverPasswordToken])
+            const id = result.rows[0].user_id;
+            if(userId === id){
+                  try{
+                        await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin]);
+                        
+                       // await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
+                  }catch(error){
+                        console.error(error)
+                  }
+            }else{
+                  res.send('Неверные учетные данные')
+            }      
       }catch(error){
             console.error(error)
       }
-      console.log(userLogin, userId, hash)
+
       res.send('Новый пароль сохранен')
 }
 
