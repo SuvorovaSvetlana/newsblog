@@ -115,8 +115,7 @@ const newPassword = async (req, res)=>{
             if(userId === id){
                   try{
                         await pool.query ('UPDATE users SET user_password = $1 WHERE user_login = $2', [hash, userLogin]);
-                        
-                       // await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
+                        await pool.query ('DELETE FROM forgotPassword WHERE user_id = $1', [userId]);
                   }catch(error){
                         console.error(error)
                   }
